@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jp.kotmw.pso2_discordbot.controllers.ShipController">
+   <children>
+      <Label fx:id="shipNum" prefHeight="27.0" prefWidth="71.0" text="Ship" translateX="20.0">
+         <font>
+            <Font name="Meiryo UI" size="20.0" />
+         </font>
+      </Label>
+      <ToggleButton fx:id="toggle" mnemonicParsing="false" onAction="#toggleStatus" prefHeight="25.0" prefWidth="77.0" text="有効" translateX="50.0" />
+      <Pane fx:id="pane" prefHeight="60.0" prefWidth="185.0" style="-fx-background-color: #f20; -fx-border-style: solid;" translateX="80.0">
+         <children>
+            <Label layoutX="40.0" layoutY="6.0" text="停止中">
+               <font>
+                  <Font name="Meiryo UI Bold" size="35.0" />
+               </font>
+            </Label>
+         </children></Pane>
+   </children>
+</HBox>
