@@ -107,7 +107,7 @@ public class FxControllers implements Initializable {
 	
 	@FXML
 	public void sendText(ActionEvent event) throws MissingPermissionsException, RateLimitException, DiscordException {
-		Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(textfield.getText());
+		Main.manager.getMotherClient().getChannelByID("").sendMessage(textfield.getText());
 		addLog(textfield.getText());
 		textfield.setText("");
 	}

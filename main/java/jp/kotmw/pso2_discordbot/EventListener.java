@@ -135,10 +135,10 @@ public class EventListener {
 		IGuild guild = e.getGuild();
 		try {
 			if(e.getUser().isBot()) {
-				guild.getChannelByID("190495171371204608").sendMessage("Botが追加されました Name: "+e.getUser().getName());
+				guild.getChannelByID("").sendMessage("Botが追加されました Name: "+e.getUser().getName());
 				return;
 			}
-			guild.getChannelByID("190495171371204608").sendMessage(e.getUser().mention()+"さん、いらっしゃい!"+e.getClient().getChannelByID("190789370335199232").mention()+" に自己紹介を書いてくれると感謝感謝です！");
+			guild.getChannelByID("").sendMessage(e.getUser().mention()+"さん、いらっしゃい!"+e.getClient().getChannelByID("").mention()+" に自己紹介を書いてくれると感謝感謝です！");
 		} catch (MissingPermissionsException | RateLimitException
 				| DiscordException e1) {
 			e1.printStackTrace();
@@ -166,7 +166,7 @@ public class EventListener {
 	}
 	
 	private boolean isActiveArks(IMessage imsg) {
-		if(!imsg.getGuild().getID().equalsIgnoreCase("190495171371204608"))
+		if(!imsg.getGuild().getID().equalsIgnoreCase(""))
 			return false;
 		for(IRole role : imsg.getAuthor().getRolesForGuild(imsg.getGuild())) {
 			if(role.getName().equalsIgnoreCase("Active-Arks"))
@@ -177,20 +177,20 @@ public class EventListener {
 	
 	private String getID(int server) {
 		switch(server) {
-		case 1:return "277491963731640320";
-		case 2:return "277492031658655745";
-		case 3:return "277492089598771200";
-		case 4:return "277492147639287811";
-		case 5:return "277492220188426240";
-		case 6:return "277492390548340748";
-		case 7:return "277492440418615297";
-		case 8:return "277492489836036097";
-		case 9:return "277720913363861504";
-		case 10:return "277721163877056512";
+		case 1:return "";
+		case 2:return "";
+		case 3:return "";
+		case 4:return "";
+		case 5:return "";
+		case 6:return "";
+		case 7:return "";
+		case 8:return "";
+		case 9:return "";
+		case 10:return "";
 		default:
 			break;
 		}
-		return "236118009159090176";
+		return "";
 	}
 	
 	private int canRun(String type) {

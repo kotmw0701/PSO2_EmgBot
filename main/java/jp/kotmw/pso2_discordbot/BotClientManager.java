@@ -16,7 +16,7 @@ public class BotClientManager {
 	private static Map<Integer, IDiscordClient> client = new HashMap<>();
 	
 	public BotClientManager(boolean allenable) {
-		mother = getClient("MjM2MTE4MDA5MTU5MDkwMTc2.CuEq4A.gOD-LT-12JFxq09zAujx4qxRwY0", true);
+		mother = getClient("", true);
 		if(!allenable)
 			return;
 		for(int i = 1; i <= 10; i++) {
@@ -137,25 +137,25 @@ public class BotClientManager {
 	private static String getToken(int server) {
 		switch(server) {
 		case 1:
-			return "Mjc3NDkxOTYzNzMxNjQwMzIw.C3ek2Q.8JH6ykH9q0oWSH-FS6c63InVIK8";
+			return "";
 		case 2:
-			return "Mjc3NDkyMDMxNjU4NjU1NzQ1.C3ekyg.J7-rotRgypNiLqc8ME3HeFg1s0w";
+			return "";
 		case 3:
-			return "Mjc3NDkyMDg5NTk4NzcxMjAw.C3ekuQ.dX717HKkPVIKIco7qKPYv10_MFE";
+			return "";
 		case 4:
-			return "Mjc3NDkyMTQ3NjM5Mjg3ODEx.C3ekoA.gYBP5o8Ck1RagmneumA_KcLg4II";
+			return "";
 		case 5:
-			return "Mjc3NDkyMjIwMTg4NDI2MjQw.C3h3yA.3qO_HH1zHnSWX2H_L0UIvfxsZVE";
+			return "";
 		case 6:
-			return "Mjc3NDkyMzkwNTQ4MzQwNzQ4.C3h4Ew.8Lot6XW_UUJAPBqgp-WZ-0gKJEo";
+			return "";
 		case 7:
-			return "Mjc3NDkyNDQwNDE4NjE1Mjk3.C3h4Kw.zEFuOLo4dEA_regI8Kqvq7ZeN3w";
+			return "";
 		case 8:
-			return "Mjc3NDkyNDg5ODM2MDM2MDk3.C3h4UA.BjiJ5MtVoGhBpT2J4cw_f07aTXc";
+			return "";
 		case 9:
-			return "Mjc3NzIwOTEzMzYzODYxNTA0.C3h4aQ.JBVHPNgHcjBuBEBO0iusfyWgimU";
+			return "";
 		case 10:
-			return "Mjc3NzIxMTYzODc3MDU2NTEy.C3ipuA.1woEPQOdmokOTkppzBAmM85uAO8";
+			return "";
 		default:
 			break;
 		}
