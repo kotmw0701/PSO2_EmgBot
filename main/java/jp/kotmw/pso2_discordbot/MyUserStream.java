@@ -5,8 +5,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import jp.kotmw.pso2_discordbot.controllers.FxControllers;
 import sx.blah.discord.util.DiscordException;
@@ -34,77 +37,28 @@ public class MyUserStream extends UserStreamAdapter {
 			return;
 		}
 		String allemg = status.getText().replaceAll("#PSO2", "");
+		if(!allemg.contains("緊急クエスト予告"))
+			return;
 		try {
-			Main.manager.getMotherClient().getChannelByID("").sendMessage("───────────────" +Main.sepa+ allemg);
+			Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage("───────────────" +Main.sepa+ allemg);
 			setHistory(allemg, false);
 		} catch (MissingPermissionsException | RateLimitException
-				| DiscordException | IOException e) {
+				| DiscordException | IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void setHistory(String allemg, boolean initialization) throws IOException {
+	public static void setHistory(String allemg, boolean initialization) throws IOException, InterruptedException {
 		Calendar cal = new GregorianCalendar();
 		String date = cal.get(Calendar.YEAR)
 				+ "-" + (cal.get(Calendar.MONTH) + 1)
 				+ "-" + cal.get(Calendar.DAY_OF_MONTH);
-		String hour = ""+(cal.get(Calendar.HOUR_OF_DAY)+1);
+		String hour = (String.valueOf(cal.get(Calendar.HOUR_OF_DAY)+1).length() < 2 ? "0"+String.valueOf(cal.get(Calendar.HOUR_OF_DAY)+1) : String.valueOf(cal.get(Calendar.HOUR_OF_DAY)+1));
 		Main.sendDebugMessage("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 		Main.sendDebugMessage("1: "+allemg);
 		Main.sendDebugMessage("─────────────────────────────");
-		hour = hour.length() < 2 ? "0"+hour : hour;
-		/*if(!allemg.startsWith("＜"+(String.valueOf((cal.get(Calendar.HOUR_OF_DAY)+1)).length() < 2 ? "0"+hour : hour)+"時 緊急クエスト予告＞"))
-			return;*/
-		allemg = allemg.
-				substring(15).replace("　", "").
-				replaceAll("\r", Main.sepa).
-				replaceAll("\n", Main.sepa).
-				replaceAll("\r\n", Main.sepa).
-				replaceAll(Main.sepa+"メンテナンス2時間前です。", "").
-				replaceAll(Main.sepa+"メンテナンス1時間前です。", "");
-		if(allemg.substring(5, 7).equalsIgnoreCase("続報"))
-			return;
-		Main.sendDebugMessage("2: "+allemg);
-		Main.sendDebugMessage("─────────────────────────────");
-		//String[] ships = allemg.split(Main.sepa);
-		if (allemg.startsWith("【準備中】")) {
-			if(allemg.indexOf(Main.sepa) != -1)
-				allemg = allemg.substring(0, allemg.indexOf(Main.sepa)+2).replaceAll("【準備中】", "");
-			else
-				allemg = allemg.replaceAll("【準備中】", "");
-		} else if (allemg.startsWith("【開催中】")) {
-			if(allemg.indexOf(Main.sepa) != -1) {
-				allemg = allemg.replaceAll(allemg.substring(0,allemg.indexOf(Main.sepa)+2),"");
-				if(allemg.startsWith("【開催間近】"))
-					if(allemg.indexOf(Main.sepa) != -1)
-						allemg = allemg.substring(0, allemg.indexOf(Main.sepa)+2).replaceAll("【開催間近】", "");
-					else
-						allemg = allemg.replaceAll("【開催間近】", "");
-				else if(allemg.startsWith("【準備中】"))
-					if(allemg.indexOf(Main.sepa) != -1)
-						allemg = allemg.substring(0, allemg.indexOf(Main.sepa)+2).replaceAll("【準備中】", "");
-					else
-						allemg = allemg.replaceAll("【準備中】", "");
-				else allemg = "無し";
-			} else allemg = "無し";
-		}
-		String[] ships = allemg.split(Main.sepa);
-		if(ships.length == 10) {
-			allemg = "";
-			for(int i = 0; i <= 9; i++) {
-				String ship[] = ships[i].split(":");
-				if(ship[1].equalsIgnoreCase("―"))
-					ship[1] = "無し";
-				allemg = allemg.equalsIgnoreCase("") ? "Random:"+ship[0]+":"+ship[1] : allemg+"/"+ship[0]+":"+ship[1];
-			}
-		} else {
-			if(allemg.indexOf(Main.sepa) != -1)
-				allemg = allemg.substring(0, allemg.indexOf(Main.sepa)+2);
-			allemg = "Notice:"+allemg.replaceAll(Main.sepa, "");
-		}
-		//allemg = formatEmergencyText(ships);
-		Main.history = new EmgHistory(allemg);
-		BotClientManager.changeStatus(allemg, hour, initialization);
+		Main.history.setAllEmergency(formatEmergencyText(allemg.replaceAll("\n", "/"), hour));
+		BotClientManager.updateStatus(initialization);
 		if(initialization)
 			return;
 		Main.sendDebugMessage("処理チェック3");
@@ -120,22 +74,73 @@ public class MyUserStream extends UserStreamAdapter {
 		writer.close();
 	}
 	
-	@SuppressWarnings("unused")
-	private static boolean isNotice(String[] args) {
-		for(String txt : args) {
-			if(txt.indexOf("アークスリーグ") > -1)
-				return true;
+	private static String formatEmergencyText(String allemg, String hour) {
+		String formated = "Error:不具合を確認しました";
+		List<String> sepas = Arrays.asList(allemg.split("/"));
+		sepas = sepas.subList(1, sepas.size()).stream().filter(s -> !s.contains("メンテ日時変更検知"))
+				.filter(s -> !s.matches("メンテナンス\\d時間前です。"))
+				.collect(Collectors.toList());
+		//League
+		if(sepas.stream().anyMatch(emg -> emg.contains("アークスリーグ"))) {
+			String league = sepas.get(a(sepas));
+			List<String> list = sepas.stream().filter(s -> !s.contains("アークスリーグ")).collect(Collectors.toList());
+			String[] emgarray = new String[10];
+			for(int i = 0; i < 10; i++) {
+				for(String emg : list)
+					if(i == (Integer.valueOf(emg.split(":")[0])-1))
+						emgarray[i] = emg.split(":")[1];
+				if(emgarray[i] == null)
+					emgarray[i] = league;
+			}
+			formated = "";
+			for(int i = 0; i < 10; i++) {
+				formated += formated.equalsIgnoreCase("") ? "Random:"+emgarray[i] : "/"+emgarray[i];
+			}
 		}
-		return false;
-	}
-	
-	@SuppressWarnings("unused")
-	private static String formatEmergencyText(String[] allemg) {
-		String formated = null;
-		
-		
-		
-		
+		//Notice
+		else if(sepas.size() < 10)
+			formated = "Notice:"+sepas.get(0);
+		//Random
+		else if(sepas.size() == 10) {
+			formated = "";
+			for(String emg : sepas) {
+				emg = emg.split(":")[1].equalsIgnoreCase("―") ? "報告がありません" : emg.split(":")[1];
+				formated += (formated.equalsIgnoreCase("") ? "Random:" + emg : "/" + emg);
+			}
+		}
+		FxControllers.addLog(formated);
 		return formated;
 	}
+	
+	static int a(List<String> emgs) {
+		for(String emg : emgs) {
+			if(emg.contains("アークスリーグ"))
+				return emgs.indexOf(emg);
+		}
+		return -1;
+	}
+	
+	/*private void omikuzi(Status status) throws TwitterException {
+		if(!status.getInReplyToScreenName().equalsIgnoreCase("kotmw0701") || (status.getText().indexOf("おみくじ")<0) )
+			return;
+		String[] array = {"……素晴らしい。素晴らしい、素晴らしいぞこれは！頭の中を、知識が駆け巡る！ああ、ああ！　破裂してしまいそうだ！この知識の奔流に！",
+				"素晴らしく運が良いな、君は",
+				"大吉",
+				"中吉",
+				"小吉",
+				"吉",
+				"末吉",
+				"末小吉",
+				"凶",
+				"小凶",
+				"半凶",
+				"末凶",
+				"大凶",
+				"素晴らしく運が無いな、君は",
+				"そんな……こぼれていく……手にしたはずの、知識が……！ああ……ああ……あああっ！全知が、宇宙の理が……僕の中から……滑り落ちていく！……終わりだ。全て終わりだ。"};
+		List<String> list = Arrays.asList(array);
+		Collections.shuffle(list);
+		Twitter twitter = new TwitterFactory(Main.config).getInstance();
+		twitter.updateStatus(new StatusUpdate("@"+status.getUser().getScreenName()+" "+list.get(0)).inReplyToStatusId(status.getId()));
+	}*/
 }

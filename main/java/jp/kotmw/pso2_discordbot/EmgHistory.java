@@ -7,17 +7,12 @@ public class EmgHistory {
 
 	private String notice;
 	private Map<Integer,String> ships = new HashMap<>();
-
-	public EmgHistory(String allemg) {
-		for(int i = 1; i <= 10; i++) {
-			if(allemg.startsWith("Notice:")) {
-				ships.put(i, allemg.replaceAll("Notice:", ""));
-				notice = allemg.replaceAll("Notice:", "");
-			} else if(allemg.startsWith("Random:")) {
-				ships.put(i, allemg.replaceAll("Random:", "").split("/")[i-1].split(":")[1]);
-				notice = "ランダム緊急がある可能性";
-			}
-		}
+	
+	public void setAllEmergency(String allemg) {
+		if(allemg.startsWith("Random:"))
+			setAllEmergency("random", allemg.replaceAll("Random:", ""));
+		else if(allemg.startsWith("Notice:"))
+			setAllEmergency("notice", allemg.replaceAll("Notice:", ""));
 	}
 	
 	public void setAllEmergency(String type, String emg) {

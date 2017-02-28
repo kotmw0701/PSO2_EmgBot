@@ -29,6 +29,12 @@ public class EventListener {
 	public void onMessageReceivedEvent(MessageReceivedEvent e) {
 		IMessage msg = e.getMessage();
 		String txt = msg.getContent();
+		try {
+			anga(msg);
+		} catch (MissingPermissionsException | RateLimitException | DiscordException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		if(!txt.startsWith("%"))
 			return;
 		String args[] = txt.substring(1).split(" ");
@@ -42,71 +48,84 @@ public class EventListener {
 		FxControllers.addLog(msg.getAuthor().getName()+" issued command: "+txt);
 		try {
 			if(command.equalsIgnoreCase("help")) {
-				channel.sendMessage("**%emergency [server]** 現在予告が出てる緊急を表示します");
+				sendText(channel, "------Commands------"
+						,"**`< >`** 必須引数, **`[ ]`** 任意引数"
+						,"**`\"\"`**で囲まれているものがある場合はどれかを選択してください"
+						,"**`%emergency [server]`**	現在予告が出てる緊急を表示します"
+						,"**`%startup <server>`**	指定したサーバーのBotを稼働させます"
+						,"**`%shutdown <server>`**	指定したサーバーのBotを停止させます"
+						,"**`%geturl <server>`**	指定したサーバーの認証URLを取得します"
+						,"**`%setemg <\"random\"/\"notice\"> <emgs> [server]`**	説明めんどいから聞いて(おい");
 			} else if(command.equalsIgnoreCase("emg") || command.equalsIgnoreCase("emergency")) {
 				int server = 2;
 				if(args.length == 2) {
 					if(!NumberUtils.isNumber(args[1]) || (Integer.valueOf(args[1]) > 10 || Integer.valueOf(args[1]) < 1)) {
-						RemoveTimer(channel.sendMessage("1-10の範囲で入れてください"), second);
+						RemoveTimer(channel, second, "1-10の範囲で入れてください");
 						return;
 					}
 					server = Integer.valueOf(args[1]);
 				}
-				RemoveTimer(channel.sendMessage(server+" 鯖 : "+ "**"+Main.history.getEmergency(server)+"**"), second);
+				RemoveTimer(channel, second, (server+" 鯖 : "+ "**"+Main.history.getEmergency(server)+"**"));
 			} else if(command.equalsIgnoreCase("startup") || command.equalsIgnoreCase("shutdown")) {
 				if(args.length != 2)
 					return;
 				if(!isActiveArks(msg)) {
-					RemoveTimer(channel.sendMessage("権限所持者以外実行不可能です"), second);
-					return;
-				}
-				int cooltime = canRun(command);
-				if(cooltime > 0) {
-					RemoveTimer(channel.sendMessage("クールタイムが終わっていません 【残り "+cooltime+" 秒】"), second);
-					return;
-				}
-				if(!NumberUtils.isNumber(args[1]) || (Integer.valueOf(args[1]) > 10 || Integer.valueOf(args[1]) < 1)) {
-					RemoveTimer(channel.sendMessage("1-10の範囲で入れてください"), second);
-					return;
-				}
-				boolean enable = command.equalsIgnoreCase("startup");
-				final int server = Integer.valueOf(args[1]);
-				if(!BotClientManager.changeEnable(Integer.valueOf(args[1]), enable)) {
-					RemoveTimer(channel.sendMessage(enable ? "稼働中です" : "稼働してません"), second);
-					return;
-				}
-				Platform.runLater(() ->FxControllers.getServer(server).togglechange());
-				RemoveTimer(channel.sendMessage(server+"鯖のBotを"+(enable ? "稼働" : "停止")+"させました"), second);
-			} else if(command.equalsIgnoreCase("geturl")) {
-				if(args.length != 2)
-					return;
-				if(!isActiveArks(msg)) {
-					RemoveTimer(channel.sendMessage("権限所持者以外実行不可能です"), second);
-					return;
-				}
-				if(!NumberUtils.isNumber(args[1]) || (Integer.valueOf(args[1]) > 10 || Integer.valueOf(args[1]) < 1)) {
-					RemoveTimer(channel.sendMessage("1-10の範囲で入れてください"), second);
-					return;
-				}
-				final int server = Integer.valueOf(args[1]);
-				channel.sendMessage(server+"鯖Botの認証URL [ https://discordapp.com/oauth2/authorize?client_id="+getID(server)+"&scope=bot&permissions=84992 ]");
-			} else if(command.equalsIgnoreCase("setemg")) {
-				if(args.length < 3)
-					return;
-				if(!isActiveArks(msg)) {
-					RemoveTimer(channel.sendMessage("権限所持者以外実行不可能です"), second);
+					RemoveTimer(channel, second, "権限所持者以外実行不可能です");
 					return;
 				}
 				int cooltime = canRun(command);
 				if(cooltime > 0) {
 					String time = (cooltime/60)+"分"+(cooltime%60)+"秒";
-					RemoveTimer(channel.sendMessage("クールタイムが終わっていません\r\n【残り "+time+" 】"), second);
+					RemoveTimer(channel, second, "クールタイムが終わっていません\r\n【残り "+time+" 】");
+					return;
+				}
+				if(!NumberUtils.isNumber(args[1]) || (Integer.valueOf(args[1]) > 10 || Integer.valueOf(args[1]) < 1)) {
+					RemoveTimer(channel, second, "1-10の範囲で入れてください");
+					return;
+				}
+				boolean enable = command.equalsIgnoreCase("startup");
+				final int server = Integer.valueOf(args[1]);
+				if(!BotClientManager.changeEnable(Integer.valueOf(args[1]), enable)) {
+					RemoveTimer(channel, second, (enable ? "稼働中です" : "稼働してません"));
+					return;
+				}
+				Platform.runLater(() ->FxControllers.getServer(server).togglechange());
+				RemoveTimer(channel, second, server+"鯖のBotを"+(enable ? "稼働" : "停止")+"させました");
+			} else if(command.equalsIgnoreCase("geturl")) {
+				if(args.length != 2)
+					return;
+				if(!isActiveArks(msg)) {
+					RemoveTimer(channel, second, "権限所持者以外実行不可能です");
+					return;
+				}
+				if(!NumberUtils.isNumber(args[1]) || (Integer.valueOf(args[1]) > 10 || Integer.valueOf(args[1]) < 1)) {
+					RemoveTimer(channel, second, "1-10の範囲で入れてください");
+					return;
+				}
+				final int server = Integer.valueOf(args[1]);
+				String applicationId = BotClientManager.getID(server);
+				if(applicationId == null) {
+					RemoveTimer(channel, second, "対象のBotを立ち上げてから再試行してください");
+					return;
+				}
+				channel.sendMessage(server+"鯖Botの認証URL [ https://discordapp.com/oauth2/authorize?client_id="+applicationId+"&scope=bot&permissions=84992 ]");
+			} else if(command.equalsIgnoreCase("setemg")) {
+				if(args.length < 3)
+					return;
+				if(!isActiveArks(msg)) {
+					RemoveTimer(channel, second, "権限所持者以外実行不可能です");
+					return;
+				}
+				int cooltime = canRun(command);
+				if(cooltime > 0) {
+					String time = (cooltime/60)+"分"+(cooltime%60)+"秒";
+					RemoveTimer(channel, second, "クールタイムが終わっていません\r\n【残り "+time+" 】");
 					return;
 				}
 				if("random".equalsIgnoreCase(args[1])) {
 					if(args.length == 4) {
 						if(!NumberUtils.isNumber(args[3]) || (Integer.valueOf(args[3]) > 10 || Integer.valueOf(args[3]) < 1)) {
-							RemoveTimer(channel.sendMessage("1-10の範囲で入れてください"), second);
+							RemoveTimer(channel, second,"1-10の範囲で入れてください");
 							return;
 						}
 						Main.history.setEmergency(Integer.valueOf(args[3]), args[2]);
@@ -114,9 +133,10 @@ public class EventListener {
 						Main.history.setAllEmergency("random", args[2]);
 					}
 				} else if("notice".equalsIgnoreCase(args[1])) {
-					Main.history.setAllEmergency("notice", args[2]);
+					if(args.length == 3)
+						Main.history.setAllEmergency("notice", args[2]);
 				}
-				BotClientManager.updateStaus();
+				BotClientManager.updateStatus(false);
 				Main.setemg = new ToggleCoolTime(60*60);
 				Main.setemg.start();
 			} else if(command.equalsIgnoreCase("update")) {
@@ -125,7 +145,7 @@ public class EventListener {
 				MyUserStream.setHistory(twitter.getUserTimeline(user.getId()).get(0).getText().replaceAll("#PSO2", ""), true);
 			}
 		} catch (MissingPermissionsException | RateLimitException
-				| DiscordException | TwitterException | IOException e1) {
+				| DiscordException | TwitterException | IOException | InterruptedException e1) {
 			e1.printStackTrace();
 		}
 	}
@@ -135,18 +155,32 @@ public class EventListener {
 		IGuild guild = e.getGuild();
 		try {
 			if(e.getUser().isBot()) {
-				guild.getChannelByID("").sendMessage("Botが追加されました Name: "+e.getUser().getName());
+				guild.getChannelByID("190495171371204608").sendMessage("Botが追加されました Name: "+e.getUser().getName());
 				return;
 			}
-			guild.getChannelByID("").sendMessage(e.getUser().mention()+"さん、いらっしゃい!"+e.getClient().getChannelByID("").mention()+" に自己紹介を書いてくれると感謝感謝です！");
+			guild.getChannelByID("190495171371204608").sendMessage(e.getUser().mention()+"さん、いらっしゃい!"+e.getClient().getChannelByID("190789370335199232").mention()+" に自己紹介を書いてくれると感謝感謝です！");
 		} catch (MissingPermissionsException | RateLimitException
 				| DiscordException e1) {
 			e1.printStackTrace();
 		}
 	}
+
+	IMessage sendText(IChannel channel, String... msgs) throws MissingPermissionsException, RateLimitException, DiscordException {
+		String separator = "\r\n";
+		String text = "";
+		for(String msg : msgs)
+			text = text+msg+separator;
+		return channel.sendMessage(text);
+	}
 	
-	void RemoveTimer(IMessage imessage, int second) {
-		new CommandTextRemover(imessage, second).start();
+	void anga(IMessage imsg) throws MissingPermissionsException, RateLimitException, DiscordException {
+		if(imsg.getContent().indexOf("アンガ") < 0)
+			return;
+		imsg.getChannel().sendMessage("ｷﾞｭﾙﾙﾙﾙﾙ ﾀﾞﾝﾀﾞﾝｯ↓ﾀｯﾀｯﾀ ﾀﾞﾀﾞﾝ↑×4ﾁｬﾗﾗﾗﾗﾗ～→ﾗ～↑ﾗ～↓ﾗ～→");
+	}
+	
+	void RemoveTimer(IChannel channel, int second, String... msgs) throws MissingPermissionsException, RateLimitException, DiscordException {
+		new CommandTextRemover(sendText(channel, msgs), second).start();
 	}
 
 	
@@ -166,31 +200,13 @@ public class EventListener {
 	}
 	
 	private boolean isActiveArks(IMessage imsg) {
-		if(!imsg.getGuild().getID().equalsIgnoreCase(""))
+		if(!imsg.getGuild().getID().equalsIgnoreCase("190495171371204608"))
 			return false;
 		for(IRole role : imsg.getAuthor().getRolesForGuild(imsg.getGuild())) {
 			if(role.getName().equalsIgnoreCase("Active-Arks"))
 				return true;
 		}
 		return false;
-	}
-	
-	private String getID(int server) {
-		switch(server) {
-		case 1:return "";
-		case 2:return "";
-		case 3:return "";
-		case 4:return "";
-		case 5:return "";
-		case 6:return "";
-		case 7:return "";
-		case 8:return "";
-		case 9:return "";
-		case 10:return "";
-		default:
-			break;
-		}
-		return "";
 	}
 	
 	private int canRun(String type) {

@@ -47,11 +47,17 @@ public class Main extends Application {
 		logger = Logger.getLogger("Emg_bot_logger");
 		logger.log(Level.INFO, "Botを起動します...");
 		configurationbuilder = new ConfigurationBuilder();
+		history = new EmgHistory();
+		/*configurationbuilder.setDebugEnabled(true) //kotmw0701
+		.setOAuthConsumerKey("ileIQimfkNLWZvksrLYkmZPFp")
+		.setOAuthConsumerSecret("xiUcEALaEbLPjVyrqF4mpLSgwpUjE7pvERCYozNCy1oaYus57X")
+		.setOAuthAccessToken("2277744186-C1LlhfbTwuHtNfqJT1Ftou70H3XacPh3a8ItfMb")
+		.setOAuthAccessTokenSecret("6pQlnLJW2Jo2Y1JmFyiUEPSL7EzyVuK7Kw9P8dGsGcrtO");*/
 		configurationbuilder.setDebugEnabled(true)
-		.setOAuthConsumerKey("consumerkey") //kotmw_sub
-		.setOAuthConsumerSecret("consumersecret")
-		.setOAuthAccessToken("accesstoken")
-		.setOAuthAccessTokenSecret("accesstokensecret");
+		.setOAuthConsumerKey("v9G4Qq8H4TBLZYdsVkRVt1a3D") //kotmw_sub
+		.setOAuthConsumerSecret("Rr4mno9jxBHylxc4Rs3pq3YfrCJwscibNx9ITtCzs7YuHn1mp2")
+		.setOAuthAccessToken("2784217741-NwXlDqwm9IHZ2tJlRbQAPTfFjA7DBG7EBZWgSAA")
+		.setOAuthAccessTokenSecret("0iOOA6iJ9gQYJercD4Hq7OhE0jzc76wGe4h3RlwR9Nt41");
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -99,7 +105,7 @@ public class Main extends Application {
 		try {
 			User user = twitter.showUser("@pso2_emg_hour");
 			MyUserStream.setHistory(twitter.getUserTimeline(user.getId()).get(0).getText().replaceAll("#PSO2", ""), true);
-		} catch (TwitterException | IOException e) {
+		} catch (TwitterException | IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

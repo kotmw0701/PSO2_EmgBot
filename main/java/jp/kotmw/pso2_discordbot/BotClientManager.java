@@ -16,13 +16,15 @@ public class BotClientManager {
 	private static Map<Integer, IDiscordClient> client = new HashMap<>();
 	
 	public BotClientManager(boolean allenable) {
-		mother = getClient("", true);
+		mother = getClient("MjM2MTE4MDA5MTU5MDkwMTc2.CuEq4A.gOD-LT-12JFxq09zAujx4qxRwY0", true);
 		if(!allenable)
 			return;
 		for(int i = 1; i <= 10; i++) {
-			client.put(i, getClient(getToken(i), true));
 			final int server = i;
+			FxControllers.addLog("Server No."+server+" Enabling...");
+			client.put(i, getClient(getToken(i), true));
 			Platform.runLater(() -> FxControllers.getServer(server).togglechange());
+			FxControllers.addLog("Server No."+server+" Enabled!");
 			//System.out.println("---------------------------------------------------------  ship"+i+"----------------------------------");
 		}
 	}
@@ -89,7 +91,7 @@ public class BotClientManager {
 		return null;
 	}
 	
-	public static void changeStatus(String emgtext, String hour, boolean delay){
+	/*public static void changeStatus(String emgtext, String hour, boolean delay){
 		try {
 			if(delay)
 				Thread.sleep(5*1000);
@@ -105,21 +107,28 @@ public class BotClientManager {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}*/
+	
+	public static String getID(int server) throws DiscordException {
+		IDiscordClient client = getClient(server);
+		if(client == null)
+			return null;
+		return client.getApplicationClientID();
 	}
 	
-	private static void setStatus(String text, boolean notice) {
-		Main.manager.getMotherClient().changeStatus(Status.game(notice ? text : Main.history.getNotice()));
+	/*private static void setStatus(boolean notice) {
+		Main.manager.getMotherClient().changeStatus(Status.game(notice ? "" : Main.history.getNotice()));
 		for(int i = 1; i <= 10; i++) {
 			IDiscordClient client = getClient(i);
 			if(client == null)
 				continue;
-			if(!notice)
-				text = Main.history.getEmergency(i);
-			client.changeStatus(Status.game(text));
+			client.changeStatus(Status.game(notice ? Main.history.getNotice() : Main.history.getEmergency(i)));
 		}
-	}
+	}*/
 	
-	public static void updateStaus() {
+	public static void updateStatus(boolean delay) throws InterruptedException {
+		if(delay)
+			Thread.sleep(5*1000);
 		Main.manager.getMotherClient().changeStatus(Status.game(Main.history.getNotice()));
 		for(int i = 1; i <= 10; i++) {
 			IDiscordClient client = getClient(i);
@@ -137,25 +146,25 @@ public class BotClientManager {
 	private static String getToken(int server) {
 		switch(server) {
 		case 1:
-			return "";
+			return "Mjc3NDkxOTYzNzMxNjQwMzIw.C3ek2Q.8JH6ykH9q0oWSH-FS6c63InVIK8";
 		case 2:
-			return "";
+			return "Mjc3NDkyMDMxNjU4NjU1NzQ1.C3ekyg.J7-rotRgypNiLqc8ME3HeFg1s0w";
 		case 3:
-			return "";
+			return "Mjc3NDkyMDg5NTk4NzcxMjAw.C3ekuQ.dX717HKkPVIKIco7qKPYv10_MFE";
 		case 4:
-			return "";
+			return "Mjc3NDkyMTQ3NjM5Mjg3ODEx.C3ekoA.gYBP5o8Ck1RagmneumA_KcLg4II";
 		case 5:
-			return "";
+			return "Mjc3NDkyMjIwMTg4NDI2MjQw.C3h3yA.3qO_HH1zHnSWX2H_L0UIvfxsZVE";
 		case 6:
-			return "";
+			return "Mjc3NDkyMzkwNTQ4MzQwNzQ4.C3h4Ew.8Lot6XW_UUJAPBqgp-WZ-0gKJEo";
 		case 7:
-			return "";
+			return "Mjc3NDkyNDQwNDE4NjE1Mjk3.C3h4Kw.zEFuOLo4dEA_regI8Kqvq7ZeN3w";
 		case 8:
-			return "";
+			return "Mjc3NDkyNDg5ODM2MDM2MDk3.C3h4UA.BjiJ5MtVoGhBpT2J4cw_f07aTXc";
 		case 9:
-			return "";
+			return "Mjc3NzIwOTEzMzYzODYxNTA0.C3h4aQ.JBVHPNgHcjBuBEBO0iusfyWgimU";
 		case 10:
-			return "";
+			return "Mjc3NzIxMTYzODc3MDU2NTEy.C3ipuA.1woEPQOdmokOTkppzBAmM85uAO8";
 		default:
 			break;
 		}

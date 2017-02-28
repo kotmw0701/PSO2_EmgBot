@@ -76,15 +76,18 @@ public class FxControllers implements Initializable {
 			@Override
 			public void handle(KeyEvent event) {
 				if(event.getCode().equals(KeyCode.ENTER)) {
-					if(textfield.getText() == null)
+					String text = textfield.getText();
+					if(text == null)
 						return;
 					try {
-						Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(textfield.getText());
+						Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(text);
 					} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					logfield.appendText(textfield.getText()+System.getProperty("line.separator"));
+					if(text.startsWith("%pattern")) 
+						addLog(""+text.split(" ")[1].matches("メンテナンス\\d時間前です"));
+					addLog(text);
 					textfield.setText("");
 				}
 			}
@@ -107,7 +110,7 @@ public class FxControllers implements Initializable {
 	
 	@FXML
 	public void sendText(ActionEvent event) throws MissingPermissionsException, RateLimitException, DiscordException {
-		Main.manager.getMotherClient().getChannelByID("").sendMessage(textfield.getText());
+		Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(textfield.getText());
 		addLog(textfield.getText());
 		textfield.setText("");
 	}
@@ -116,11 +119,11 @@ public class FxControllers implements Initializable {
 		return ships.get(server-1);
 	}
 	
-	public static void addLog(String text) {
+	public static void addLog(Object content) {
 		Calendar calendar = new GregorianCalendar();
 		SimpleDateFormat simpledate = new SimpleDateFormat("HH:mm:ss");
 		Platform.runLater(()-> {
-			controller.logfield.appendText("["+simpledate.format(calendar.getTime())+"]: "+text+"\r\n");
+			controller.logfield.appendText("["+simpledate.format(calendar.getTime())+"]: "+content+"\r\n");
 		});
 	}
 	
