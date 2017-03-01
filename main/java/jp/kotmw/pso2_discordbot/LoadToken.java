@@ -8,11 +8,10 @@ import java.util.Map;
 
 public class LoadToken {
 	
-	private String mothertoken;
-	private Map<Integer, String> tokens = new HashMap<>();
-	private static final LoadToken instance = new LoadToken();
+	private static String mothertoken;
+	private static Map<Integer, String> tokens = new HashMap<>();
 	
-	private LoadToken() {
+	static {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("tokens.ini")));
 		String str;
 		try {
@@ -28,15 +27,11 @@ public class LoadToken {
 		}
 	}
 	
-	public static LoadToken getInstance(){
-		return instance;
-	}
-	
-	public String getMotherToken() {
+	public static String getMotherToken() {
 		return mothertoken;
 	}
 	
-	public String getToken(int server) {
+	public static String getToken(int server) {
 		return tokens.get(server);
 	}
 }
