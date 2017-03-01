@@ -12,22 +12,24 @@ public class LoadToken {
 	private Map<Integer, String> tokens = new HashMap<>();
 	private static final LoadToken instance = new LoadToken();
 	
-	private LoadToken() {}
-	
-	public static LoadToken getInstance() {
-		return instance;
-	}
-	
-	public void initialize() throws IOException {
+	private LoadToken() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("tokens.ini")));
 		String str;
-		while((str = reader.readLine()) != null) {
-			if(str.contains("mother"))
-				mothertoken = str.split(":")[1];
-			else if(str.contains("ship"))
-				tokens.put(Integer.valueOf(str.replaceAll("ship", "").split(":")[0]), str.split(":")[1]);
+		try {
+			while((str = reader.readLine()) != null) {
+				if(str.contains("mother"))
+					mothertoken = str.split(":")[1];
+				else if(str.contains("ship"))
+					tokens.put(Integer.valueOf(str.replaceAll("ship", "").split(":")[0]), str.split(":")[1]);
+			}
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		reader.close();
+	}
+	
+	public static LoadToken getInstance(){
+		return instance;
 	}
 	
 	public String getMotherToken() {

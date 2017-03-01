@@ -16,13 +16,13 @@ public class BotClientManager {
 	private static Map<Integer, IDiscordClient> client = new HashMap<>();
 	
 	public BotClientManager(boolean allenable) {
-		mother = getClient(Main.tokens.getMotherToken(), true);
+		mother = getClient(LoadToken.getInstance().getMotherToken(), true);
 		if(!allenable)
 			return;
 		for(int i = 1; i <= 10; i++) {
 			final int server = i;
 			FxControllers.addLog("Server No."+server+" Enabling...");
-			client.put(i, getClient(Main.tokens.getToken(server), true));
+			client.put(i, getClient(LoadToken.getInstance().getToken(server), true));
 			Platform.runLater(() -> FxControllers.getServer(server).togglechange());
 			FxControllers.addLog("Server No."+server+" Enabled!");
 			//System.out.println("---------------------------------------------------------  ship"+i+"----------------------------------");
@@ -51,7 +51,7 @@ public class BotClientManager {
 				try {
 					if(enable) {
 						FxControllers.addLog("Server No."+server+" Enabling...");
-						client.put(server, getClient(Main.tokens.getToken(server), true));
+						client.put(server, getClient(LoadToken.getInstance().getToken(server), true));
 						setServerStatus(server);
 						FxControllers.addLog("Server No."+server+" Enabled!");
 					} else {
