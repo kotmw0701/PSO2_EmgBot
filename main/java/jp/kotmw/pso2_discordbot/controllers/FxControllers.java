@@ -80,7 +80,7 @@ public class FxControllers implements Initializable {
 					if(text == null)
 						return;
 					try {
-						Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(text);
+						Main.manager.getMotherClient().getChannelByID("").sendMessage(text);
 					} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -110,7 +110,7 @@ public class FxControllers implements Initializable {
 	
 	@FXML
 	public void sendText(ActionEvent event) throws MissingPermissionsException, RateLimitException, DiscordException {
-		Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(textfield.getText());
+		Main.manager.getMotherClient().getChannelByID("").sendMessage(textfield.getText());
 		addLog(textfield.getText());
 		textfield.setText("");
 	}

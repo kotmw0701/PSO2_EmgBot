@@ -155,10 +155,10 @@ public class EventListener {
 		IGuild guild = e.getGuild();
 		try {
 			if(e.getUser().isBot()) {
-				guild.getChannelByID("190495171371204608").sendMessage("Botが追加されました Name: "+e.getUser().getName());
+				guild.getChannelByID("").sendMessage("Botが追加されました Name: "+e.getUser().getName());
 				return;
 			}
-			guild.getChannelByID("190495171371204608").sendMessage(e.getUser().mention()+"さん、いらっしゃい!"+e.getClient().getChannelByID("190789370335199232").mention()+" に自己紹介を書いてくれると感謝感謝です！");
+			guild.getChannelByID("").sendMessage(e.getUser().mention()+"さん、いらっしゃい!"+e.getClient().getChannelByID("").mention()+" に自己紹介を書いてくれると感謝感謝です！");
 		} catch (MissingPermissionsException | RateLimitException
 				| DiscordException e1) {
 			e1.printStackTrace();

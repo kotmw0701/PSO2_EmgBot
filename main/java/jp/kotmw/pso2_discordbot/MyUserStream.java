@@ -1,4 +1,4 @@
-package jp.kotmw.pso2_discordbot;
+﻿package jp.kotmw.pso2_discordbot;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,7 +57,7 @@ public class MyUserStream extends UserStreamAdapter {
 		Main.sendDebugMessage("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 		Main.sendDebugMessage("1: "+allemg);
 		Main.sendDebugMessage("─────────────────────────────");
-		Main.history.setAllEmergency(formatEmergencyText(allemg.replaceAll("\n", "/"), hour));
+		Main.history.setAllEmergency(allemg = formatEmergencyText(allemg.replaceAll("\n", "/"), hour));
 		BotClientManager.updateStatus(initialization);
 		if(initialization)
 			return;
@@ -119,28 +119,4 @@ public class MyUserStream extends UserStreamAdapter {
 		}
 		return -1;
 	}
-	
-	/*private void omikuzi(Status status) throws TwitterException {
-		if(!status.getInReplyToScreenName().equalsIgnoreCase("kotmw0701") || (status.getText().indexOf("おみくじ")<0) )
-			return;
-		String[] array = {"……素晴らしい。素晴らしい、素晴らしいぞこれは！頭の中を、知識が駆け巡る！ああ、ああ！　破裂してしまいそうだ！この知識の奔流に！",
-				"素晴らしく運が良いな、君は",
-				"大吉",
-				"中吉",
-				"小吉",
-				"吉",
-				"末吉",
-				"末小吉",
-				"凶",
-				"小凶",
-				"半凶",
-				"末凶",
-				"大凶",
-				"素晴らしく運が無いな、君は",
-				"そんな……こぼれていく……手にしたはずの、知識が……！ああ……ああ……あああっ！全知が、宇宙の理が……僕の中から……滑り落ちていく！……終わりだ。全て終わりだ。"};
-		List<String> list = Arrays.asList(array);
-		Collections.shuffle(list);
-		Twitter twitter = new TwitterFactory(Main.config).getInstance();
-		twitter.updateStatus(new StatusUpdate("@"+status.getUser().getScreenName()+" "+list.get(0)).inReplyToStatusId(status.getId()));
-	}*/
 }
