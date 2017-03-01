@@ -79,6 +79,7 @@ public class MyUserStream extends UserStreamAdapter {
 		List<String> sepas = Arrays.asList(allemg.split("/"));
 		sepas = sepas.subList(1, sepas.size()).stream().filter(s -> !s.contains("メンテ日時変更検知"))
 				.filter(s -> !s.matches("メンテナンス\\d時間前です。"))
+				.filter(s -> !s.contains("イベント情報更新"))
 				.collect(Collectors.toList());
 		//League
 		if(sepas.stream().anyMatch(emg -> emg.contains("アークスリーグ"))) {
@@ -104,7 +105,8 @@ public class MyUserStream extends UserStreamAdapter {
 		else if(sepas.size() == 10) {
 			formated = "";
 			for(String emg : sepas) {
-				emg = emg.split(":")[1].equalsIgnoreCase("―") ? "報告がありません" : emg.split(":")[1];
+				System.out.println(emg+" : "+emg.split(":")[1].contains("―"));
+				emg = emg.split(":")[1].contains("―") ? "報告がありません" : emg.split(":")[1];
 				formated += (formated.equalsIgnoreCase("") ? "Random:" + emg : "/" + emg);
 			}
 		}
