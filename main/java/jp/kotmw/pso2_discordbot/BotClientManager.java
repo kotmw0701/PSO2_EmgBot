@@ -16,13 +16,13 @@ public class BotClientManager {
 	private static Map<Integer, IDiscordClient> client = new HashMap<>();
 	
 	public BotClientManager(boolean allenable) {
-		mother = getClient("", true);
+		mother = getClient(Main.tokens.getMotherToken(), true);
 		if(!allenable)
 			return;
 		for(int i = 1; i <= 10; i++) {
 			final int server = i;
 			FxControllers.addLog("Server No."+server+" Enabling...");
-			client.put(i, getClient(getToken(i), true));
+			client.put(i, getClient(Main.tokens.getToken(server), true));
 			Platform.runLater(() -> FxControllers.getServer(server).togglechange());
 			FxControllers.addLog("Server No."+server+" Enabled!");
 			//System.out.println("---------------------------------------------------------  ship"+i+"----------------------------------");
@@ -51,7 +51,7 @@ public class BotClientManager {
 				try {
 					if(enable) {
 						FxControllers.addLog("Server No."+server+" Enabling...");
-						client.put(server, getClient(getToken(server), true));
+						client.put(server, getClient(Main.tokens.getToken(server), true));
 						setServerStatus(server);
 						FxControllers.addLog("Server No."+server+" Enabled!");
 					} else {
@@ -141,33 +141,5 @@ public class BotClientManager {
 	private static void setServerStatus(int server) throws InterruptedException {
 		Thread.sleep(3*1000);
 		getClient(server).changeStatus(Status.game(Main.history.getEmergency(server)));
-	}
-	
-	private static String getToken(int server) {
-		switch(server) {
-		case 1:
-			return "";
-		case 2:
-			return "";
-		case 3:
-			return "";
-		case 4:
-			return "";
-		case 5:
-			return "";
-		case 6:
-			return "";
-		case 7:
-			return "";
-		case 8:
-			return "";
-		case 9:
-			return "";
-		case 10:
-			return "";
-		default:
-			break;
-		}
-		return null;
 	}
 }

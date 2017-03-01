@@ -24,35 +24,27 @@ import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.User;
-import twitter4j.conf.Configuration;
-import twitter4j.conf.ConfigurationBuilder;
 
 public class Main extends Application {
 
 	public static TwitterStream twitterStream;
 	public static BotClientManager manager;
-	static ConfigurationBuilder configurationbuilder;
 	static Logger logger;
 	static String sepa = System.getProperty("line.separator");
-	static boolean debug = false;
+	static boolean debug = true;
 	static boolean allenable = false;
 	static EmgHistory history;
 	static int enableerror;
-	static Configuration config;
 	static ToggleCoolTime toggleenable;
 	static ToggleCoolTime setemg;
+	static LoadToken tokens = LoadToken.getInstance();
 
 	public static void main(String args[]) throws InterruptedException, IOException {
 		System.setProperty("file.encoding", "UTF-8");
 		logger = Logger.getLogger("Emg_bot_logger");
 		logger.log(Level.INFO, "Botを起動します...");
-		configurationbuilder = new ConfigurationBuilder();
 		history = new EmgHistory();
-		configurationbuilder.setDebugEnabled(true)
-		.setOAuthConsumerKey("") //kotmw_sub
-		.setOAuthConsumerSecret("")
-		.setOAuthAccessToken("")
-		.setOAuthAccessTokenSecret("");
+		tokens.initialize();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -63,15 +55,14 @@ public class Main extends Application {
 					alert.setTitle("選択");
 					allenable = alert.showAndWait().get().equals(ButtonType.YES);*/
 					FxControllers.addLog("TwitterStream conneting...");
-					config = configurationbuilder.build();
-					twitterStream = new TwitterStreamFactory(config).getInstance();
+					twitterStream = new TwitterStreamFactory().getInstance();
 					twitterStream.addListener(new MyUserStream());
 					twitterStream.user();
 					FxControllers.addLog("TwitterStream connected");
 					FxControllers.addLog("Discord connecting...");
 					manager = new BotClientManager(allenable);
 					FxControllers.addLog("Discord connected");
-					getFinalStatus(new TwitterFactory(config).getInstance());
+					getFinalStatus(new TwitterFactory().getInstance());
 					EventDispatcher dispatcher = manager.getMotherClient().getDispatcher();
 					dispatcher.registerListener(new EventListener());
 					Platform.runLater(()-> {
@@ -95,7 +86,7 @@ public class Main extends Application {
 		if(debug)
 			logger.log(Level.INFO, msg);
 	}
-	
+
 	private static void getFinalStatus(Twitter twitter) {
 		try {
 			User user = twitter.showUser("@pso2_emg_hour");

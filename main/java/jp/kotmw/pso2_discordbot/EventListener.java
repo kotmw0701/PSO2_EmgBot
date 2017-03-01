@@ -140,7 +140,7 @@ public class EventListener {
 				Main.setemg = new ToggleCoolTime(60*60);
 				Main.setemg.start();
 			} else if(command.equalsIgnoreCase("update")) {
-				Twitter twitter = new TwitterFactory(Main.config).getInstance();
+				Twitter twitter = new TwitterFactory().getInstance();
 				User user = twitter.showUser("@pso2_emg_hour");
 				MyUserStream.setHistory(twitter.getUserTimeline(user.getId()).get(0).getText().replaceAll("#PSO2", ""), true);
 			}
@@ -155,10 +155,10 @@ public class EventListener {
 		IGuild guild = e.getGuild();
 		try {
 			if(e.getUser().isBot()) {
-				guild.getChannelByID("").sendMessage("Botが追加されました Name: "+e.getUser().getName());
+				guild.getChannelByID("190495171371204608").sendMessage("Botが追加されました Name: "+e.getUser().getName());
 				return;
 			}
-			guild.getChannelByID("").sendMessage(e.getUser().mention()+"さん、いらっしゃい!"+e.getClient().getChannelByID("").mention()+" に自己紹介を書いてくれると感謝感謝です！");
+			guild.getChannelByID("190495171371204608").sendMessage(e.getUser().mention()+"さん、いらっしゃい!"+e.getClient().getChannelByID("190789370335199232").mention()+" に自己紹介を書いてくれると感謝感謝です！");
 		} catch (MissingPermissionsException | RateLimitException
 				| DiscordException e1) {
 			e1.printStackTrace();
