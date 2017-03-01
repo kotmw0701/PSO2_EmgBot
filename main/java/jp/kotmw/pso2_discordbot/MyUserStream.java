@@ -105,7 +105,6 @@ public class MyUserStream extends UserStreamAdapter {
 		else if(sepas.size() == 10) {
 			formated = "";
 			for(String emg : sepas) {
-				System.out.println(emg+" : "+emg.split(":")[1].contains("―"));
 				emg = emg.split(":")[1].contains("―") ? "報告がありません" : emg.split(":")[1];
 				formated += (formated.equalsIgnoreCase("") ? "Random:" + emg : "/" + emg);
 			}
