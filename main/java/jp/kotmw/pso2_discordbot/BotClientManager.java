@@ -3,7 +3,6 @@ package jp.kotmw.pso2_discordbot;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.application.Platform;
 import jp.kotmw.pso2_discordbot.controllers.FxControllers;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -15,18 +14,8 @@ public class BotClientManager {
 	private static IDiscordClient mother;
 	private static Map<Integer, IDiscordClient> client = new HashMap<>();
 	
-	public BotClientManager(boolean allenable) {
-		mother = getClient(LoadToken.getMotherToken(), true);
-		if(!allenable)
-			return;
-		for(int i = 1; i <= 10; i++) {
-			final int server = i;
-			FxControllers.addLog("Server No."+server+" Enabling...");
-			client.put(i, getClient(LoadToken.getToken(server), true));
-			Platform.runLater(() -> FxControllers.getServer(server).togglechange());
-			FxControllers.addLog("Server No."+server+" Enabled!");
-			//System.out.println("---------------------------------------------------------  ship"+i+"----------------------------------");
-		}
+	public BotClientManager() {
+		mother = getClient(BotConfiguration.getMotherToken(), true);
 	}
 	
 	public IDiscordClient getMotherClient() {
@@ -51,7 +40,7 @@ public class BotClientManager {
 				try {
 					if(enable) {
 						FxControllers.addLog("Server No."+server+" Enabling...");
-						client.put(server, getClient(LoadToken.getToken(server), true));
+						client.put(server, getClient(BotConfiguration.getToken(server), true));
 						setServerStatus(server);
 						FxControllers.addLog("Server No."+server+" Enabled!");
 					} else {
@@ -75,6 +64,8 @@ public class BotClientManager {
 	}
 	
 	private static IDiscordClient getClient(String token, boolean login) { // Returns an instance of the Discord client
+		if(token == null || token.isEmpty())
+			return null;
 		ClientBuilder clientBuilder = new ClientBuilder(); // Creates the ClientBuilder instance
 		clientBuilder.withToken(token); // Adds the login info to the builder
 		try {

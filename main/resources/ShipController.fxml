@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -14,9 +15,9 @@
          </font>
       </Label>
       <ToggleButton fx:id="toggle" mnemonicParsing="false" onAction="#toggleStatus" prefHeight="25.0" prefWidth="77.0" text="有効" translateX="50.0" />
-      <Pane fx:id="pane" prefHeight="60.0" prefWidth="185.0" style="-fx-background-color: #f20; -fx-border-style: solid;" translateX="80.0">
+      <Pane fx:id="pane" prefHeight="60.0" prefWidth="185.0" style="-fx-background-color: #FFD700; -fx-border-style: solid;" translateX="80.0">
          <children>
-            <Label layoutX="40.0" layoutY="6.0" text="停止中">
+            <Label layoutX="40.0" layoutY="6.0" text="準備中">
                <font>
                   <Font name="Meiryo UI Bold" size="35.0" />
                </font>

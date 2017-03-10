@@ -1,5 +1,6 @@
 package jp.kotmw.pso2_discordbot.controllers;
 
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,12 +13,17 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import jp.kotmw.pso2_discordbot.Main;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -72,23 +78,12 @@ public class FxControllers implements Initializable {
 		ships.add(ship8Controller.setServer(8));
 		ships.add(ship9Controller.setServer(9));
 		ships.add(ship10Controller.setServer(10));
+		textfield.setText(null);
 		textfield.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
 				if(event.getCode().equals(KeyCode.ENTER)) {
-					String text = textfield.getText();
-					if(text == null)
-						return;
-					try {
-						Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(text);
-					} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if(text.startsWith("%pattern")) 
-						addLog(""+text.split(" ")[1].matches("メンテナンス\\d時間前です"));
-					addLog(text);
-					textfield.setText("");
+					sendText();
 				}
 			}
 		});
@@ -110,9 +105,42 @@ public class FxControllers implements Initializable {
 	
 	@FXML
 	public void sendText(ActionEvent event) throws MissingPermissionsException, RateLimitException, DiscordException {
-		Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(textfield.getText());
-		addLog(textfield.getText());
-		textfield.setText("");
+		sendText();
+	}
+	
+	@FXML
+	public void openSettingWindow(ActionEvent event) throws IOException {
+		Stage stage = new Stage();
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.initOwner(Main.getPrimary());
+		stage.setTitle("設定");
+		stage.getIcons().add(new Image("arks_logo.jpg"));
+		stage.setResizable(false);
+		stage.setScene(new Scene(FXMLLoader.load(ClassLoader.getSystemResource("SettingWindow.fxml"))));
+		stage.show();
+	}
+	
+	private void sendText() {
+		String text = textfield.getText();
+		if(text == null)
+			return;
+		if(text.startsWith("%")) {
+			if(text.startsWith("%pattern")) 
+				addLog(""+text.split(" ")[1].matches("メンテナンス\\d時間前です"));
+			else if(text.startsWith("%debug")) {
+				String txt = String.valueOf(Main.toggleDebugmode());
+				addLog("デバッグモードを "+txt+" に変更しました");
+			}
+			return;
+		}
+		try {
+			Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(text);
+		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		addLog(text);
+		textfield.setText(null);
 	}
 	
 	public static ShipController getServer(int server) {

@@ -85,6 +85,10 @@ public class EventListener {
 				}
 				boolean enable = command.equalsIgnoreCase("startup");
 				final int server = Integer.valueOf(args[1]);
+				if(BotConfiguration.getToken(server) == null) {
+					RemoveTimer(channel, second, "対象のBotのTokenが設定されていないので、操作することが出来ません","管理者に問い合わせてください");
+					return;
+				}
 				if(!BotClientManager.changeEnable(Integer.valueOf(args[1]), enable)) {
 					RemoveTimer(channel, second, (enable ? "稼働中です" : "稼働してません"));
 					return;

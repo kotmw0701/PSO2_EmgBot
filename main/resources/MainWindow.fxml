@@ -8,7 +8,22 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="950.0" style="-fx-background-color: #8c8c8c;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jp.kotmw.pso2_discordbot.controllers.FxControllers">
    <children>
-      <VBox prefHeight="597.0" prefWidth="414.0" translateY="15.0">
+      <MenuBar prefHeight="30.0" prefWidth="950.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="ファイル">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#openSettingWindow" text="設定" />
+                  <MenuItem mnemonicParsing="false" text="終了" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <VBox layoutY="15.0" prefHeight="597.0" prefWidth="414.0" translateY="15.0">
          <children>
             <fx:include fx:id="ship1" source="ShipController.fxml" />
             <fx:include fx:id="ship2" source="ShipController.fxml" />
@@ -31,16 +46,17 @@
                   <Button mnemonicParsing="false" onAction="#allStop" text="全体停止" translateX="-10.0" />
                </children>
             </HBox>
-            <Label layoutX="14.0" layoutY="4.0" prefHeight="21.0" prefWidth="175.0" text="---System log---" textAlignment="CENTER">
+            <Label layoutX="14.0" layoutY="27.0" prefHeight="21.0" prefWidth="175.0" text="---System log---" textAlignment="CENTER">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <TextArea fx:id="logfield" editable="false" layoutX="14.0" layoutY="25.0" prefHeight="565.0" prefWidth="500.0" style="-fx-text-fill: #fff;" />
+            <TextArea fx:id="logfield" editable="false" layoutX="14.0" layoutY="48.0" prefHeight="542.0" prefWidth="500.0" style="-fx-text-fill: #fff;" />
             <Label fx:id="cooltime" layoutX="14.0" layoutY="595.0" prefHeight="30.0" prefWidth="154.0" text="Cooltime: ">
                <font>
                   <Font size="15.0" />
-               </font></Label>
+               </font>
+            </Label>
          </children>
       </Pane>
    </children>
