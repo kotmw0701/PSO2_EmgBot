@@ -65,7 +65,7 @@ public class EventListener {
 					}
 					server = Integer.valueOf(args[1]);
 				}
-				RemoveTimer(channel, second, (server+" 鯖 : "+ "**"+Main.history.getEmergency(server)+"**"));
+				RemoveTimer(channel, second, (server+" 鯖 : "+ "**"+EmgHistory.getInstance().getEmergency(server)+"**"));
 			} else if(command.equalsIgnoreCase("startup") || command.equalsIgnoreCase("shutdown")) {
 				if(args.length != 2)
 					return;
@@ -132,13 +132,13 @@ public class EventListener {
 							RemoveTimer(channel, second,"1-10の範囲で入れてください");
 							return;
 						}
-						Main.history.setEmergency(Integer.valueOf(args[3]), args[2]);
+						EmgHistory.getInstance().setEmergency(Integer.valueOf(args[3]), args[2]);
 					} else {
-						Main.history.setAllEmergency("random", args[2]);
+						EmgHistory.getInstance().setAllEmergency("random", args[2]);
 					}
 				} else if("notice".equalsIgnoreCase(args[1])) {
 					if(args.length == 3)
-						Main.history.setAllEmergency("notice", args[2]);
+						EmgHistory.getInstance().setAllEmergency("notice", args[2]);
 				}
 				BotClientManager.updateStatus(false);
 				Main.setemg = new ToggleCoolTime(60*60);
@@ -146,7 +146,7 @@ public class EventListener {
 			} else if(command.equalsIgnoreCase("update")) {
 				Twitter twitter = new TwitterFactory().getInstance();
 				User user = twitter.showUser("@pso2_emg_hour");
-				MyUserStream.setHistory(twitter.getUserTimeline(user.getId()).get(0).getText().replaceAll("#PSO2", ""), true);
+				EmgHistory.getInstance().setHistory(twitter.getUserTimeline(user.getId()).get(0).getText().replaceAll("#PSO2", ""), true);
 			}
 		} catch (MissingPermissionsException | RateLimitException
 				| DiscordException | TwitterException | IOException | InterruptedException e1) {

@@ -24,7 +24,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import jp.kotmw.pso2_discordbot.EmgHistory;
 import jp.kotmw.pso2_discordbot.Main;
+import jp.kotmw.pso2_discordbot.MyUserStream;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -122,25 +124,28 @@ public class FxControllers implements Initializable {
 	
 	private void sendText() {
 		String text = textfield.getText();
-		if(text == null)
+		if(text == "")
 			return;
-		if(text.startsWith("%")) {
-			if(text.startsWith("%pattern")) 
-				addLog(""+text.split(" ")[1].matches("メンテナンス\\d時間前です"));
-			else if(text.startsWith("%debug")) {
-				String txt = String.valueOf(Main.toggleDebugmode());
-				addLog("デバッグモードを "+txt+" に変更しました");
-			}
-			return;
-		}
 		try {
+			if(text.startsWith("%")) {
+				if(text.startsWith("%pattern")) 
+					addLog(""+text.split(" ")[1].matches("メンテナンス\\d時間前です"));
+				else if(text.startsWith("%debug")) {
+					String txt = String.valueOf(Main.toggleDebugmode());
+					addLog("デバッグモードを "+txt+" に変更しました");
+				} else if(text.startsWith("%testmentions")) {
+					MyUserStream.serverNotice(2, EmgHistory.getInstance().getEmergency(2));
+				}
+				textfield.setText("");
+				return;
+			}
 			Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage(text);
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		addLog(text);
-		textfield.setText(null);
+		textfield.setText("");
 	}
 	
 	public static ShipController getServer(int server) {

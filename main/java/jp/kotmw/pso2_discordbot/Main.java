@@ -35,16 +35,13 @@ public class Main extends Application {
 	static boolean debug = false;
 	static Logger logger;
 	static String sepa = System.getProperty("line.separator");
-	static EmgHistory history;
-	static int enableerror;
 	static ToggleCoolTime toggleenable;
 	static ToggleCoolTime setemg;
 
-	public static void main(String args[]) throws InterruptedException, IOException {
+	public static void main(String... args) throws InterruptedException, IOException {
 		System.setProperty("file.encoding", "UTF-8");
 		logger = Logger.getLogger("Emg_bot_logger");
 		logger.log(Level.INFO, "Botを起動します...");
-		history = new EmgHistory();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -93,9 +90,9 @@ public class Main extends Application {
 				FxControllers.addLog("Discord connecting...");
 				manager = new BotClientManager();
 				FxControllers.addLog("Discord connected");
-				getFinalStatus(new TwitterFactory().getInstance());
 				EventDispatcher dispatcher = manager.getMotherClient().getDispatcher();
 				dispatcher.registerListener(new EventListener());
+				getFinalStatus(new TwitterFactory().getInstance());
 				Platform.runLater(() -> {
 					Alert alert2 = new Alert(AlertType.INFORMATION);
 					alert2.setTitle("起動完了");
@@ -122,7 +119,7 @@ public class Main extends Application {
 	private static void getFinalStatus(Twitter twitter) {
 		try {
 			User user = twitter.showUser("@pso2_emg_hour");
-			MyUserStream.setHistory(twitter.getUserTimeline(user.getId()).get(0).getText().replaceAll("#PSO2", ""), true);
+			EmgHistory.getInstance().setHistory(twitter.getUserTimeline(user.getId()).get(0).getText().replaceAll("#PSO2", ""), true);
 		} catch (TwitterException | IOException | InterruptedException e) {
 			e.printStackTrace();
 		}

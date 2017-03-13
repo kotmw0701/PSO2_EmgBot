@@ -22,7 +22,7 @@ public class BotClientManager {
 		return mother;
 	}
 	
-	private static IDiscordClient getClient(int server) {
+	public static IDiscordClient getClient(int server) {
 		if(!client.containsKey(server))
 			return null;
 		return client.get(server);
@@ -76,7 +76,6 @@ public class BotClientManager {
 				return clientBuilder.build(); // Creates the client instance but it doesn't log the client in yet, you would have to call client.login() yourself
 			}
 		} catch (DiscordException e) {
-			Main.enableerror++;
 			e.printStackTrace();
 		}
 		return null;
@@ -120,17 +119,17 @@ public class BotClientManager {
 	public static void updateStatus(boolean delay) throws InterruptedException {
 		if(delay)
 			Thread.sleep(5*1000);
-		Main.manager.getMotherClient().changeStatus(Status.game(Main.history.getNotice()));
+		Main.manager.getMotherClient().changeStatus(Status.game(EmgHistory.getInstance().getNotice()));
 		for(int i = 1; i <= 10; i++) {
 			IDiscordClient client = getClient(i);
 			if(client == null)
 				continue;
-			client.changeStatus(Status.game(Main.history.getEmergency(i)));
+			client.changeStatus(Status.game(EmgHistory.getInstance().getEmergency(i)));
 		}
 	}
 	
 	private static void setServerStatus(int server) throws InterruptedException {
 		Thread.sleep(3*1000);
-		getClient(server).changeStatus(Status.game(Main.history.getEmergency(server)));
+		getClient(server).changeStatus(Status.game(EmgHistory.getInstance().getEmergency(server)));
 	}
 }
