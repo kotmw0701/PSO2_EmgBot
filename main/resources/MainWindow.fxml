@@ -51,7 +51,7 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <TextArea fx:id="logfield" editable="false" layoutX="14.0" layoutY="48.0" prefHeight="542.0" prefWidth="500.0" style="-fx-text-fill: #fff;" />
+            <TextArea fx:id="logfield" editable="false" layoutX="14.0" layoutY="48.0" prefHeight="542.0" prefWidth="500.0" style="-fx-text-fill: #fff;" wrapText="true" />
             <Label fx:id="cooltime" layoutX="14.0" layoutY="595.0" prefHeight="30.0" prefWidth="154.0" text="Cooltime: ">
                <font>
                   <Font size="15.0" />

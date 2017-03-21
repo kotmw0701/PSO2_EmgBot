@@ -7,10 +7,13 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 import jp.kotmw.pso2_discordbot.controllers.FxControllers;
@@ -18,6 +21,7 @@ import jp.kotmw.pso2_discordbot.controllers.FxControllers;
 public class EmgHistory {
 
 	private static EmgHistory instance = new EmgHistory();
+	private String hour;
 	private String notice;
 	private Map<Integer,String> ships = new HashMap<>();
 	
@@ -32,7 +36,7 @@ public class EmgHistory {
 		String date = cal.get(Calendar.YEAR)
 				+ "-" + (cal.get(Calendar.MONTH) + 1)
 				+ "-" + cal.get(Calendar.DAY_OF_MONTH);
-		String hour = (String.valueOf(cal.get(Calendar.HOUR_OF_DAY)+1).length() < 2 ? "0"+String.valueOf(cal.get(Calendar.HOUR_OF_DAY)+1) : String.valueOf(cal.get(Calendar.HOUR_OF_DAY)+1));
+		hour = (String.valueOf(cal.get(Calendar.HOUR_OF_DAY)+1).length() < 2 ? "0"+String.valueOf(cal.get(Calendar.HOUR_OF_DAY)+1) : String.valueOf(cal.get(Calendar.HOUR_OF_DAY)+1));
 		Main.sendDebugMessage("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 		Main.sendDebugMessage("1: "+allemg);
 		Main.sendDebugMessage("─────────────────────────────");
@@ -41,9 +45,12 @@ public class EmgHistory {
 		FxControllers.addLog(allemg);
 		if(initialization)
 			return;
+		noticeTimer(Calendar.SECOND, 1);
 		Main.sendDebugMessage("処理チェック3");
 		Main.sendDebugMessage("3: "+allemg);
 		Main.sendDebugMessage("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+		if(Main.debug)
+			return;
 		File file = new File("C:\\Discord_bot\\PSO2_EmgBot\\history\\emg_"+date+".log");
 		if(!file.exists()) {
 			file.createNewFile();
@@ -55,11 +62,12 @@ public class EmgHistory {
 	
 	private String formatEmergencyText(String allemg, String hour) {
 		String formated = "Error:不具合を確認しました";
-		List<String> sepas = Arrays.asList(allemg.split("/"));
+		List<String> sepas = Arrays.asList(allemg.replaceAll("　", "").split("/"));
 		sepas = sepas.subList(1, sepas.size()).stream().filter(s -> !s.contains("メンテ日時変更検知"))
 				.filter(s -> !s.matches("メンテナンス\\d時間前です。"))
 				.filter(s -> !s.contains("イベント情報更新"))
 				.collect(Collectors.toList());
+		Main.sendDebugMessage(sepas);
 		//League
 		if(sepas.stream().anyMatch(emg -> emg.contains("アークスリーグ"))) {
 			String league = sepas.get(a(sepas));
@@ -78,8 +86,9 @@ public class EmgHistory {
 			}
 		}
 		//Notice
-		else if(sepas.size() < 10)
+		else if(sepas.size() < 10) {
 			formated = "Notice:"+sepas.get(0);
+		}
 		//Random
 		else if(sepas.size() == 10) {
 			formated = "";
@@ -88,6 +97,7 @@ public class EmgHistory {
 				formated += (formated.equalsIgnoreCase("") ? "Random:" + emg : "/" + emg);
 			}
 		}
+		Main.sendDebugMessage(formated);
 		return formated;
 	}
 	
@@ -143,7 +153,26 @@ public class EmgHistory {
 		return ships.get(server);
 	}
 	
+	public String getHour() {
+		return hour;
+	}
+	
+	public String getTwoHourBefore() {
+		return hour;
+	}
+	
 	public String getNotice() {
 		return notice;
+	}
+	
+	public void noticeTimer(int delay) {noticeTimer(Calendar.MINUTE, delay);}
+	
+	public void noticeTimer(int field, int delay) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(field, delay);
+		TimerTask task = new NoticeTimer();
+		Timer timer = new Timer();
+		timer.schedule(task, cal.getTime());
+		FxControllers.addLog("タイマー設定: "+ new Date(task.scheduledExecutionTime()));
 	}
 }

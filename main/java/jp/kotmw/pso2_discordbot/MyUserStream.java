@@ -2,7 +2,7 @@ package jp.kotmw.pso2_discordbot;
 
 import java.io.IOException;
 
-import sx.blah.discord.api.IDiscordClient;
+import jp.kotmw.pso2_discordbot.util.MessageUtil;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -31,39 +31,13 @@ public class MyUserStream extends UserStreamAdapter {
 		if(!allemg.contains("緊急クエスト予告"))
 			return;
 		try {
-			Main.manager.getMotherClient().getChannelByID("236138218955866128").sendMessage("───────────────" +Main.sepa+ allemg);
+			if(!Main.debug)
+				new MessageUtil().sendMessage(Main.manager.getMotherClient().getChannelByID("236138218955866128"), "───────────────", allemg);
 			EmgHistory.getInstance().setHistory(allemg, false);
 		} catch (MissingPermissionsException | RateLimitException
 				| DiscordException | IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public static void serverNotice(int server, String emg) {
-		IDiscordClient bot = BotClientManager.getClient(server);
-		if(bot == null)
-			return;
-		try {
-			bot.getGuildByID("190495171371204608").getChannelByID("190495171371204608").sendMessage(getMentions(server)+ emg);
-		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		/*bot.getGuilds().forEach(guild -> {
-			try {
-				guild.getChannelByID(channelid).sendMessage(getMentions(server)+ emg);
-			} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});*/
-	}
-	
-	private static String getMentions(int server) {
-		String mentions = "";
-		for(String id : BotConfiguration.getServerUsers(server))
-			mentions += Main.manager.getMotherClient().getGuildByID("190495171371204608").getUserByID(id)+ " ";
-		return mentions;
 	}
 	
 	/*private void omikuzi(Status status) throws TwitterException {

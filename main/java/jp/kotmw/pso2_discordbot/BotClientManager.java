@@ -4,15 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jp.kotmw.pso2_discordbot.controllers.FxControllers;
+import jp.kotmw.pso2_discordbot.listebers.ServersEventListener;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.Status;
 import sx.blah.discord.util.DiscordException;
 
 public class BotClientManager {
 	
 	private static IDiscordClient mother;
-	private static Map<Integer, IDiscordClient> client = new HashMap<>();
+	private static Map<Integer, IDiscordClient> clients = new HashMap<>();
 	
 	public BotClientManager() {
 		mother = getClient(BotConfiguration.getMotherToken(), true);
@@ -23,16 +26,16 @@ public class BotClientManager {
 	}
 	
 	public static IDiscordClient getClient(int server) {
-		if(!client.containsKey(server))
+		if(!clients.containsKey(server))
 			return null;
-		return client.get(server);
+		return clients.get(server);
 	}
 	
 	public static boolean changeEnable(int server, boolean enable) {
-		if(!enable && (!client.containsKey(server)))
+		if(!enable && (!clients.containsKey(server)))
 			return false;
 		if(enable)
-			if(client.containsKey(server) && client.get(server).isLoggedIn())
+			if(clients.containsKey(server) && clients.get(server).isLoggedIn())
 				return false;
 		new Thread(new Runnable() {
 			@Override
@@ -40,13 +43,15 @@ public class BotClientManager {
 				try {
 					if(enable) {
 						FxControllers.addLog("Server No."+server+" Enabling...");
-						client.put(server, getClient(BotConfiguration.getToken(server), true));
+						IDiscordClient client;
+						clients.put(server, client = getClient(BotConfiguration.getToken(server), true));
+						client.getDispatcher().registerListener(new ServersEventListener());
 						setServerStatus(server);
 						FxControllers.addLog("Server No."+server+" Enabled!");
 					} else {
 						FxControllers.addLog("Server No."+server+" Disabling...");
-						client.get(server).logout();
-						client.remove(server);
+						clients.get(server).logout();
+						clients.remove(server);
 						FxControllers.addLog("Server No."+server+" Disabled!");
 					}
 				} catch (DiscordException | InterruptedException e) {
@@ -104,6 +109,13 @@ public class BotClientManager {
 		if(client == null)
 			return null;
 		return client.getApplicationClientID();
+	}
+	
+	public static IChannel getNoticeChannel(IGuild guild) {
+		for(IChannel channel : guild.getChannels())
+			if(channel.getTopic().contains("%notice"))
+				return channel;
+		return null;
 	}
 	
 	/*private static void setStatus(boolean notice) {

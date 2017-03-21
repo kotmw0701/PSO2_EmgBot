@@ -20,6 +20,7 @@ public class BotConfiguration {
 	private static Map<Integer, String> tokens = new HashMap<>();
 	private static Map<String, String> users = new HashMap<>();
 	private static Properties config;
+	private static Properties userdata;
 	private static String settingpath = "C:\\Discord_bot\\PSO2_EmgBot\\setting.properties";//コンパイル前には必ず置き換えること！
 	private static String userspath = "C:\\Discord_bot\\PSO2_EmgBot\\users.properties";
 	private static boolean saveflag = false;
@@ -27,6 +28,7 @@ public class BotConfiguration {
 	static {
 		//Propertiesクラス使用
 		config = new Properties();
+		userdata = new Properties();
 		File file = new File(settingpath);
 		try {
 			if(!file.exists())
@@ -45,12 +47,11 @@ public class BotConfiguration {
 				tokens.put(i, config.getProperty("ship"+i));//鯖別BotのToken設定
 			}
 			if(saveflag) config.store(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), "data update");
-			config = new Properties();
 			file = new File(userspath);
 			if(!file.exists())
 				file.createNewFile();
-			config.load(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-			config.entrySet().forEach(map -> users.put(checkBOM((String)map.getKey()), (String)map.getValue()));
+			userdata.load(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+			userdata.entrySet().forEach(map -> users.put(checkBOM((String)map.getKey()), (String)map.getValue()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -101,6 +102,19 @@ public class BotConfiguration {
 		mothertoken = token;
 		config.setProperty("mother", token);
 		config.store(new FileOutputStream(settingpath), "comments");
+	}
+	
+	public static void setUserServers(String key, String servers) {
+		if(userdata.containsKey(key))
+			return;
+		userdata.setProperty(key, servers.replace("/", ","));
+		users.put(key, servers);
+		try {
+			userdata.store(new OutputStreamWriter(new FileOutputStream(new File(userspath)), "UTF-8"), "data update");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private static String checkBOM(String text) {

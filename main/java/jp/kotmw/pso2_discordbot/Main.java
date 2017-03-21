@@ -18,7 +18,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jp.kotmw.pso2_discordbot.controllers.FxControllers;
 import jp.kotmw.pso2_discordbot.controllers.ToggleCoolTime;
-import sx.blah.discord.api.events.EventDispatcher;
+import jp.kotmw.pso2_discordbot.listebers.EventListener;
 import sx.blah.discord.util.DiscordException;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -31,12 +31,12 @@ public class Main extends Application {
 
 	public static TwitterStream twitterStream;
 	public static BotClientManager manager;
+	public static ToggleCoolTime toggleenable;
+	public static ToggleCoolTime setemg;
+	public static boolean debug = false;
 	private static Stage primarystage;
-	static boolean debug = false;
 	static Logger logger;
 	static String sepa = System.getProperty("line.separator");
-	static ToggleCoolTime toggleenable;
-	static ToggleCoolTime setemg;
 
 	public static void main(String... args) throws InterruptedException, IOException {
 		System.setProperty("file.encoding", "UTF-8");
@@ -46,9 +46,11 @@ public class Main extends Application {
 			@Override
 			public void run() {
 				try {
-					FxControllers.addLog("Staring Emergency Bot");
+					FxControllers.addLog("Stating Bot...");
 					Thread.sleep(1*1000);
+					FxControllers.addLog("Enabling Mother Bot...");
 					if(BotConfiguration.getMotherToken() == null) {
+						FxControllers.addLog("Mother token is null!");
 						Platform.runLater(() -> {
 							TextInputDialog dialog = new TextInputDialog();
 							dialog.setTitle("Token入力画面");
@@ -64,14 +66,9 @@ public class Main extends Application {
 							});
 							Alert alert = new Alert(AlertType.INFORMATION);
 							alert.setTitle("確認");
-							if(!result.isPresent() || result.get().isEmpty()) {
-								alert.setContentText("取り消されました、プログラムを停止します");
-								System.exit(0);
-								return;
-							} else
-								alert.setContentText("保存しました、起動を開始します");
+							alert.setContentText((!result.isPresent() || result.get().isEmpty()) ? "取り消されました、プログラムを停止します" : "保存しました、再起動してください");
 							alert.showAndWait();
-							startup();
+							System.exit(0);
 						});
 						return;
 					}
@@ -90,8 +87,7 @@ public class Main extends Application {
 				FxControllers.addLog("Discord connecting...");
 				manager = new BotClientManager();
 				FxControllers.addLog("Discord connected");
-				EventDispatcher dispatcher = manager.getMotherClient().getDispatcher();
-				dispatcher.registerListener(new EventListener());
+				manager.getMotherClient().getDispatcher().registerListener(new EventListener());
 				getFinalStatus(new TwitterFactory().getInstance());
 				Platform.runLater(() -> {
 					Alert alert2 = new Alert(AlertType.INFORMATION);
@@ -107,7 +103,7 @@ public class Main extends Application {
 		launch(args);
 	}
 
-	public static void sendDebugMessage(String msg) {
+	public static void sendDebugMessage(Object msg) {
 		if(debug)
 			FxControllers.addLog(msg);
 	}
@@ -117,11 +113,13 @@ public class Main extends Application {
 	}
 
 	private static void getFinalStatus(Twitter twitter) {
+		FxControllers.addLog("Loading Latest Status...");
 		try {
 			User user = twitter.showUser("@pso2_emg_hour");
 			EmgHistory.getInstance().setHistory(twitter.getUserTimeline(user.getId()).get(0).getText().replaceAll("#PSO2", ""), true);
 		} catch (TwitterException | IOException | InterruptedException e) {
 			e.printStackTrace();
+			FxControllers.addLog(e);
 		}
 	}
 

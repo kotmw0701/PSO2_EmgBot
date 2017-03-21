@@ -1,6 +1,8 @@
 package jp.kotmw.pso2_discordbot.controllers;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,7 +28,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.kotmw.pso2_discordbot.EmgHistory;
 import jp.kotmw.pso2_discordbot.Main;
-import jp.kotmw.pso2_discordbot.MyUserStream;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -133,9 +134,8 @@ public class FxControllers implements Initializable {
 				else if(text.startsWith("%debug")) {
 					String txt = String.valueOf(Main.toggleDebugmode());
 					addLog("デバッグモードを "+txt+" に変更しました");
-				} else if(text.startsWith("%testmentions")) {
-					MyUserStream.serverNotice(2, EmgHistory.getInstance().getEmergency(2));
-				}
+				} else if(text.startsWith("%notice"))
+					EmgHistory.getInstance().noticeTimer(Calendar.SECOND, 1);
 				textfield.setText("");
 				return;
 			}
@@ -153,10 +153,19 @@ public class FxControllers implements Initializable {
 	}
 	
 	public static void addLog(Object content) {
+		if(content instanceof Exception) {
+			System.out.println("error?");
+			PrintWriter writer = new PrintWriter(new StringWriter());
+			Exception ex = (Exception) content;
+			ex.printStackTrace(writer);
+			content = ex.toString();
+			System.out.println(ex.toString());
+		}
+		final String text = String.valueOf(content);
 		Calendar calendar = new GregorianCalendar();
 		SimpleDateFormat simpledate = new SimpleDateFormat("HH:mm:ss");
 		Platform.runLater(()-> {
-			controller.logfield.appendText("["+simpledate.format(calendar.getTime())+"]: "+content+"\r\n");
+			controller.logfield.appendText("["+simpledate.format(calendar.getTime())+"]: "+text+"\r\n");
 		});
 	}
 	
