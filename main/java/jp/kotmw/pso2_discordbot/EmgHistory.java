@@ -110,10 +110,9 @@ public class EmgHistory {
 	}
 	
 	public void setAllEmergency(String allemg) {
-		if(allemg.startsWith("Random:"))
-			setAllEmergency("random", allemg.replaceAll("Random:", ""));
-		else if(allemg.startsWith("Notice:"))
-			setAllEmergency("notice", allemg.replaceAll("Notice:", ""));
+		if(allemg.startsWith("Random")) setAllEmergency("random", allemg.replaceAll("Random:", ""));
+		else if(allemg.startsWith("Notice")) setAllEmergency("notice", allemg.replaceAll("Notice:", ""));
+		else if(allemg.startsWith("League")) setAllEmergency("league", allemg.replaceAll("League:", ""));
 	}
 	
 	public void setAllEmergency(String type, String emg) {

@@ -10,7 +10,6 @@ import jp.kotmw.pso2_discordbot.BotConfiguration;
 import jp.kotmw.pso2_discordbot.EmgHistory;
 import jp.kotmw.pso2_discordbot.Main;
 import jp.kotmw.pso2_discordbot.controllers.FxControllers;
-import jp.kotmw.pso2_discordbot.controllers.ToggleCoolTime;
 import jp.kotmw.pso2_discordbot.util.MessageUtil;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
@@ -29,6 +28,8 @@ import twitter4j.User;
 
 public class EventListener extends MessageUtil{
 
+	int second = 5;
+	
 	@SuppressWarnings("deprecation")
 	@EventSubscriber
 	public void onMessageReceivedEvent(MessageReceivedEvent e) {
@@ -43,14 +44,13 @@ public class EventListener extends MessageUtil{
 		if(!txt.startsWith("%"))
 			return;
 		String args[] = txt.substring(1).split(" ");
-		int second = 5;
 		if(txt.indexOf("-") > -1) {
 			args = txt.substring(1).substring(0, txt.indexOf("-")-1).split(" ");
 			second = getSecond(txt.substring(txt.indexOf("-")));
 		}
 		String command = args[0];
 		IChannel channel = msg.getChannel();
-		FxControllers.addLog(msg.getAuthor().getName()+" issued command: "+txt);
+		FxControllers.addLog("Mother: " + msg.getAuthor().getName()+" issued command: "+txt);
 		try {
 			if(command.equalsIgnoreCase("help")) {
 				sendMessage(channel, "------Commands------"
@@ -59,8 +59,8 @@ public class EventListener extends MessageUtil{
 						,"**`%emergency [server]`**	現在予告が出てる緊急を表示します"
 						,"**`%startup <server>`**	指定したサーバーのBotを稼働させます"
 						,"**`%shutdown <server>`**	指定したサーバーのBotを停止させます"
-						,"**`%geturl <server>`**	指定したサーバーの認証URLを取得します"
-						,"**`%setemg <\"random\"/\"notice\"> <emgs> [server]`**	説明めんどいから聞いて(おい");
+						,"**`%geturl <server>`**	指定したサーバーのBotの認証URLを取得します"
+						,"**`%setemg <\"random\",\"notice\"> <emgs> [server]`**	説明めんどいから聞いて(おい");
 			} else if(command.equalsIgnoreCase("emg") || command.equalsIgnoreCase("emergency")) {
 				int server = 2;
 				if(args.length == 2) {
@@ -146,8 +146,8 @@ public class EventListener extends MessageUtil{
 						EmgHistory.getInstance().setAllEmergency("notice", args[2]);
 				}
 				BotClientManager.updateStatus(false);
-				Main.setemg = new ToggleCoolTime(60*60);
-				Main.setemg.start();
+				/*Main.setemg = new ToggleCoolTime(60*60);
+				Main.setemg.start();*/
 			} else if(command.equalsIgnoreCase("update")) {
 				Twitter twitter = new TwitterFactory().getInstance();
 				User user = twitter.showUser("@pso2_emg_hour");

@@ -2,6 +2,7 @@ package jp.kotmw.pso2_discordbot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jp.kotmw.pso2_discordbot.controllers.FxControllers;
 import jp.kotmw.pso2_discordbot.listebers.ServersEventListener;
@@ -111,10 +112,20 @@ public class BotClientManager {
 		return client.getApplicationClientID();
 	}
 	
+	public static int getServerNum(String botid) throws DiscordException {
+		for(Entry<Integer, IDiscordClient> client : clients.entrySet())
+			if(client.getValue().getApplicationClientID().equals(botid))
+				return client.getKey();
+		return -1;
+	}
+	
 	public static IChannel getNoticeChannel(IGuild guild) {
-		for(IChannel channel : guild.getChannels())
+		for(IChannel channel : guild.getChannels()) {
+			if(channel.getTopic() == null || channel.getTopic().isEmpty())
+				return null;
 			if(channel.getTopic().contains("%notice"))
 				return channel;
+		}
 		return null;
 	}
 	

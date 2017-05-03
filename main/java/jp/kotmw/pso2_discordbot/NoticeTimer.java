@@ -1,5 +1,6 @@
 package jp.kotmw.pso2_discordbot;
 
+import java.util.Date;
 import java.util.TimerTask;
 
 import jp.kotmw.pso2_discordbot.controllers.FxControllers;
@@ -15,13 +16,14 @@ public class NoticeTimer extends TimerTask {
 
 	@Override
 	public void run() {
-		FxControllers.addLog(super.scheduledExecutionTime());
-		if(EmgHistory.getInstance().getNotice().equalsIgnoreCase("ランダム緊急がある可能性"))
+		FxControllers.addLog(new Date(super.scheduledExecutionTime()));
+		Main.sendDebugMessage(EmgHistory.getInstance().getNotice());
+		if(EmgHistory.getInstance().getNotice().equalsIgnoreCase("ランダム緊急がある可能性")) {
 			for(int i = 1; i <= 10; i++)
-				if(isEmg(EmgHistory.getInstance().getEmergency(i)))
-					sendNotice(i);
-		else if(EmgHistory.getInstance().getNotice().contains("【準備中】"))
+				if(isEmg(EmgHistory.getInstance().getEmergency(i))) sendNotice(i);
+		} else if(EmgHistory.getInstance().getNotice().contains("【準備中】")) {
 			sendNoticeAllServer();
+		}
 	}
 	
 	private void sendNoticeAllServer() {
@@ -48,6 +50,7 @@ public class NoticeTimer extends TimerTask {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		FxControllers.addLog("No."+server+" is Sended!");
 	}
 	
 	private static String getMentions(int server, IGuild guild) {
